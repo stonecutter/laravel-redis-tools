@@ -1,0 +1,39 @@
+{
+    "name": "stonecutter/laravel-redis-tools",
+    "description": "Laravel Redis Tools: scan and delete redis keys by prefix(match)",
+    "type": "library",
+    "require": {
+        "laravel/framework": "^5.5",
+        "predis/predis": "^1.1",
+        "ext-json": "*",
+        "php": ">=7.1"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "sink cup",
+            "email": "sinkcup@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "stonecutter\\LaravelRedisTools\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "stonecutter\\LaravelRedisTools\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "stonecutter\\LaravelRedisTools\\PackageServiceProvider"
+            ]
+        }
+    },
+    "require-dev": {
+        "orchestra/testbench": "^3.5"
+    }
+}
