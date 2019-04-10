@@ -15,7 +15,7 @@ class ScanAndDelete extends Command
      *
      * @var string
      */
-    protected $signature = 'redis:scan-and-delete {--match=} {--count=100}';
+    protected $signature = 'redis:scan-and-delete {--match=} {--count=100} {--exclude=*}';
 
     /**
      * The console command description.
@@ -34,6 +34,12 @@ class ScanAndDelete extends Command
         $this->info('start');
         $match = $this->option('match');
         $count = $this->option('count');
+        $exclude_patterns = $this->option('exclude');
+        if (empty($match) && empty($exclude_patterns)) {
+            if (!$this->confirm('Warning: you will delete all keys!')) {
+                return;
+            }
+        }
 
         $cursor = 0;
         $total = 0;
@@ -41,7 +47,23 @@ class ScanAndDelete extends Command
             $this->info('loop, ' . json_encode(['cursor' => $cursor, 'keys_count' => count($keys)]));
             if (!empty($keys)) {
                 $total += count($keys);
-                Redis::del($keys);
+                if (!empty($exclude_patterns)) {
+                    foreach ($keys as $key) {
+                        $excluded = false;
+                        foreach ($exclude_patterns as $pattern) {
+                            if (fnmatch($pattern, $key)) {
+                                $this->info('excluded, ' . json_encode(compact('pattern', 'key')));
+                                $excluded = true;
+                                break;
+                            }
+                        }
+                        if (!$excluded) {
+                            Redis::del($key);
+                        }
+                    }
+                } else {
+                    Redis::del($keys);
+                }
             }
             if (!$cursor) {
                 $this->info('no more keys');
